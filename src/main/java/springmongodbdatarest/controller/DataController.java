@@ -38,7 +38,7 @@ public class DataController {
 
     @RequestMapping(value = "/saveFeed", method = RequestMethod.POST)
     public String saveFeed(HttpServletRequest request,
-                           @RequestBody Feed feed){
+                           @RequestBody Feed feed) {
         dataService.createNewFeed(feed);
         return "success";
     }
@@ -48,7 +48,7 @@ public class DataController {
                                              @RequestParam(value = "fromDate", required = true) String fromDate,
                                              @RequestParam(value = "toDate", required = true) String toDate
     ) throws ParseException {
-        return  dataService.getFeedBetweenPublishDates(fromDate,toDate);
+        return dataService.getFeedBetweenPublishDates(fromDate, toDate);
 
     }
 
@@ -56,7 +56,7 @@ public class DataController {
     @RequestMapping(value = "/getFeedBySource", method = RequestMethod.GET)
     public List<Feed> getFeedFromPublishDate(HttpServletRequest request,
                                              @RequestParam(value = "source", required = true) String source
-    ){
+    ) {
         return dataService.getFeedBySource(source);
     }
 
@@ -65,24 +65,24 @@ public class DataController {
     public List<Feed> getFeedFromCreationDate(HttpServletRequest request,
                                               @RequestParam(value = "fromDate", required = true) String fromDate,
                                               @RequestParam(value = "toDate", required = true) String toDate) throws ParseException {
-        return  dataService.getFeedFromCreationDate(fromDate,toDate);
+        return dataService.getFeedFromCreationDate(fromDate, toDate);
 
     }
 
     @RequestMapping(value = "/getFeedFromTags", method = RequestMethod.GET)
     public List<Feed> getFeedFromTags(HttpServletRequest request,
-                                              @RequestParam(value = "tags", required = true) String tags) throws ParseException {
-        List<String> list = new ArrayList<String>(Arrays.asList(tags.split(",")))  ;
-        return  dataService.getFeedBytags(list);
+                                      @RequestParam(value = "tags", required = true) String tags) throws ParseException {
+        List<String> list = new ArrayList<String>(Arrays.asList(tags.split(",")));
+        return dataService.getFeedBytags(list);
 
     }
 
     @RequestMapping(value = "/getFeedFromTagsAndSource", method = RequestMethod.GET)
     public List<Feed> getFeedFromTagsAndSource(HttpServletRequest request,
-                                              @RequestParam(value = "tags", required = true) String tags,
+                                               @RequestParam(value = "tags", required = true) String tags,
                                                @RequestParam(value = "source", required = true) String source) throws ParseException {
-        List<String> list = new ArrayList<String>(Arrays.asList(tags.split(",")))  ;
-        return  dataService.getFeedBytagsAndSource(list,source);
+        List<String> list = new ArrayList<String>(Arrays.asList(tags.split(",")));
+        return dataService.getFeedBytagsAndSource(list, source);
 
     }
 

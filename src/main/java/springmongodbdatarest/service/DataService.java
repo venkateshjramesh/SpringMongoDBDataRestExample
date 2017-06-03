@@ -13,6 +13,7 @@ import springmongodbdatarest.repository.FeedRepository;
 import springmongodbdatarest.repository.ProductRepository;
 
 import java.io.IOException;
+import java.text.Format;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -39,7 +40,7 @@ public class DataService {
 
     public Product createProduct(Product product) {
 
-        Product productVal = productRepository.findByEmailAndText(product.getEmail(),product.getText());
+        Product productVal = productRepository.findByEmailAndText(product.getEmail(), product.getText());
         return checkIfExistsAndUpdate(product, productVal);
     }
 
@@ -47,17 +48,17 @@ public class DataService {
         try {
             Data dataVal = dataRepository.findByText(product.getText());
             //check for time 15 mins and proceed
-            if(dataVal != null &&
-                dataVal.getScrap().get(dataVal.getScrap().size() - 1).getCreatedDate().compareTo(new Date()) < 0
-                    && (new  Date().getTime() - (dataVal.getScrap().get(dataVal.getScrap().size() - 1).getCreatedDate().getTime())
-            ) / (60 * 1000) % 60  < 15){
-                return  product;
+            if (dataVal != null &&
+                    dataVal.getScrap().get(dataVal.getScrap().size() - 1).getCreatedDate().compareTo(new Date()) < 0
+                    && (new Date().getTime() - (dataVal.getScrap().get(dataVal.getScrap().size() - 1).getCreatedDate().getTime())
+            ) / (60 * 1000) % 60 < 15) {
+                return product;
 
             }
             List<ScrapDetails> scrapDetailsList = scrapDataFromBing(product);
-            if(dataVal == null) {
+            if (dataVal == null) {
                 createNewData(product, scrapDetailsList);
-            }else{
+            } else {
                 updateExistingData(product, scrapDetailsList, dataVal);
             }
 
@@ -65,9 +66,9 @@ public class DataService {
             e.printStackTrace();
         }
 
-        if(productVal == null || (productVal.getId()!=null && productVal.getId().equals(""))) {
+        if (productVal == null || (productVal.getId() != null && productVal.getId().equals(""))) {
             return createNewProduct(product);
-        }else{
+        } else {
             productVal.setEmailAttempt(productVal.getEmailAttempt() + 1);
             return productRepository.save(productVal);
         }
@@ -76,18 +77,19 @@ public class DataService {
     }
 
     private List<ScrapDetails> scrapDataFromBing(Product product) throws IOException {
-        System.out.println("---------" + "https://www.bing.com/search?q="+ product.getText().replaceAll("\\s{2,}", " "));
-        Document document = Jsoup.connect("https://www.bing.com/search?q="+ product.getText().replaceAll("\\s{2,}", " ")).get();
+        System.out.println("---------" + "https://www.bing.com/search?q=" + product.getText().replaceAll("\\s{2,}", " "));
+        Document document = Jsoup.connect("https://www.bing.com/search?q=" + product.getText().replaceAll("\\s{2,}", " ")).get();
         Elements links = document.select(".b_algo");
         List<ScrapDetails> scrapDetailsList = new ArrayList<ScrapDetails>();
-        int i=0;
+        int i = 0;
         for (Element link : links) {
             ScrapDetails scrapDetails = new ScrapDetails();
             Elements linkVal = link.select("a[href]");
             // get the value from href attribute
             System.out.println("\nlink : " + linkVal.attr("href"));
             scrapDetails.setUrl(linkVal.attr("href"));
-            scrapDetails.setSeq(i);i++;
+            scrapDetails.setSeq(i);
+            i++;
             scrapDetailsList.add(scrapDetails);
         }
         return scrapDetailsList;
@@ -130,33 +132,31 @@ public class DataService {
     ////////////////////////////////////////////////////////////////////////////////////////////
     public Feed createNewFeed(Feed feed) {
         feed.setId(UUID.randomUUID().toString());
-        feed.setCreatedDate(new Date());
-        feed.setModifiedDate(new Date());
+        Format formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        String s = formatter.format(new Date());
+        feed.setCreatedDate(s);
+        feed.setModifiedDate(s);
         return feedRepository.save(feed);
     }
 
-    public List<Feed> getFeedBetweenPublishDates(String fromDate,String toDate) throws ParseException {
+    public List<Feed> getFeedBetweenPublishDates(String fromDate, String toDate) throws ParseException {
         //2017-06-03T11:00:08.204Z
-        Date date1=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").parse(fromDate.replaceAll("T"," ").replaceAll("Z",""));
-        Date date2=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").parse(toDate.replaceAll("T"," ").replaceAll("Z",""));
-        return feedRepository.findByPublishedDateBetween(date1,date2);
+        return feedRepository.findByPublishedDateBetween(fromDate, toDate);
     }
 
-    public List<Feed> getFeedBySource(String source){
+    public List<Feed> getFeedBySource(String source) {
         return feedRepository.findBySource(source);
     }
 
     public List<Feed> getFeedFromCreationDate(String fromDate, String toDate) throws ParseException {
-        Date date1=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").parse(fromDate.replaceAll("T"," ").replaceAll("Z",""));
-        Date date2=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").parse(toDate.replaceAll("T"," ").replaceAll("Z",""));
-        return feedRepository.findByCreatedDateBetween(date1,date2);
+        return feedRepository.findByCreatedDateBetween(fromDate, toDate);
     }
 
-    public List<Feed> getFeedBytags( List<String> tags){
+    public List<Feed> getFeedBytags(List<String> tags) {
         return feedRepository.findByTagsIn(tags);
     }
 
-    public List<Feed> getFeedBytagsAndSource( List<String> tags,String source){
-        return feedRepository.findByTagsInAndSource(tags,source);
+    public List<Feed> getFeedBytagsAndSource(List<String> tags, String source) {
+        return feedRepository.findByTagsInAndSource(tags, source);
     }
 }

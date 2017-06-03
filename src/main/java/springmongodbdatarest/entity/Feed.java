@@ -18,9 +18,12 @@ public class Feed {
 	private String content1;
 	private String content2;
 	private String content3;
-	private Date publishedDate;
-	private Date createdDate;
-	private Date modifiedDate;
+	//2017-06-03T13:04:28.053Z
+	private String publishedDate;
+	//2017-06-03T13:04:28.053Z
+	private String createdDate;
+	//2017-06-03T13:04:28.053Z
+	private String modifiedDate;
 
 	public String getId() {
 		return id;
@@ -86,27 +89,27 @@ public class Feed {
 		this.content3 = content3;
 	}
 
-	public Date getPublishedDate() {
+	public String getPublishedDate() {
 		return publishedDate;
 	}
 
-	public void setPublishedDate(Date publishedDate) {
+	public void setPublishedDate(String publishedDate) {
 		this.publishedDate = publishedDate;
 	}
 
-	public Date getCreatedDate() {
+	public String getCreatedDate() {
 		return createdDate;
 	}
 
-	public void setCreatedDate(Date createdDate) {
+	public void setCreatedDate(String createdDate) {
 		this.createdDate = createdDate;
 	}
 
-	public Date getModifiedDate() {
+	public String getModifiedDate() {
 		return modifiedDate;
 	}
 
-	public void setModifiedDate(Date modifiedDate) {
+	public void setModifiedDate(String modifiedDate) {
 		this.modifiedDate = modifiedDate;
 	}
 }
